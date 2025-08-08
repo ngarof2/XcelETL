@@ -539,6 +539,78 @@ knownTypes.Add "toast", "Disk Image"
 
 End Sub
 
+Sub GenerateCategorySummary()
+    Dim ws As Worksheet, summaryWS As Worksheet
+    Dim r As Long, lastRow As Long
+    Dim categoryCol As Long, sizeCol As Long
+    Dim catDict As Object, catSizeDict As Object
+    Dim category As Variant
+    Dim fileSize As Double
+    Dim summaryRow As Long
+
+    Set catDict = CreateObject("Scripting.Dictionary")
+    Set catSizeDict = CreateObject("Scripting.Dictionary")
+
+    ' Create or clear the summary sheet
+    On Error Resume Next
+    Set summaryWS = ThisWorkbook.Sheets("CategorySummary")
+    If summaryWS Is Nothing Then
+        Set summaryWS = ThisWorkbook.Sheets.Add
+        summaryWS.Name = "CategorySummary"
+    Else
+        summaryWS.Cells.Clear
+    End If
+    On Error GoTo 0
+
+    summaryWS.Cells(1, 1).Value = "Category"
+    summaryWS.Cells(1, 2).Value = "File Count"
+    summaryWS.Cells(1, 3).Value = "Total Size (KB)"
+
+    ' Loop through FileList_* sheets
+    For Each ws In ThisWorkbook.Worksheets
+        If Left(ws.Name, 9) = "FileList_" Then
+            lastRow = ws.Cells(ws.Rows.Count, 2).End(xlUp).Row
+            categoryCol = ws.Cells(1, ws.Columns.Count).End(xlToLeft).Column
+            sizeCol = 5 ' Assumes size is in column C
+
+            For r = 2 To lastRow
+                category = ws.Cells(r, categoryCol).Value
+                If IsError(category) Then category = ""
+                category = Trim(CStr(category))
+
+                If category = "" Or category = "Unclassified" Or category = "Unknown" Then
+                    category = "Uncategorized"
+                End If
+
+                If IsNumeric(ws.Cells(r, sizeCol).Value) Then
+                    fileSize = CDbl(ws.Cells(r, sizeCol).Value)
+                Else
+                    fileSize = 0 ' Or skip row if preferred
+                End If
+
+                If Not catDict.exists(category) Then
+                    catDict(category) = 1
+                    catSizeDict(category) = fileSize
+                Else
+                    catDict(category) = catDict(category) + 1
+                    catSizeDict(category) = catSizeDict(category) + fileSize
+                End If
+            Next r
+        End If
+    Next ws
+
+    ' Output to summary sheet
+    summaryRow = 2
+    For Each category In catDict.Keys
+        summaryWS.Cells(summaryRow, 1).Value = category
+        summaryWS.Cells(summaryRow, 2).Value = catDict(category)
+        summaryWS.Cells(summaryRow, 3).Value = Format(catSizeDict(category), "0.00")
+        summaryRow = summaryRow + 1
+    Next category
+
+End Sub
+
+
 Function GuessCategory(ext As String) As String
     Select Case ext
         Case "lst", "toc", "manifest"
