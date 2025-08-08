@@ -11,6 +11,11 @@
 - Log all moves and support undo operations
 
 ---
+## 0. After Downloading
+
+- Right click on the Macro-enabled file in your download directory and go to Properties.  
+- Check the "Unblock" box (becuase the source is Untrusted from GIT)
+- Click Apply, then Okay
 
 ## 🔧 Setup Instructions
 
