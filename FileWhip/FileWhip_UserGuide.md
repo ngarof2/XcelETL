@@ -27,7 +27,7 @@
 
 ## 🚀 How to Use
 
-*** You can use the UI in the ** Instructions ** tab or see below: ***
+*** You can use the UI in the "Instructions" tab or see below: ***
 
 ### Step 1: Run the File Listing
 - Press `Alt + F8` to open the **Macro dialog**.
