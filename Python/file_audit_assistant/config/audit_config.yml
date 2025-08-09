@@ -1,0 +1,9 @@
+scan_path: "./target_directory"
+extension_query: "Include common extensions for documents, spreadsheets, images, and code files."
+deduplication:
+  method: "hash"
+  ignore_extensions: [".tmp", ".log"]
+logging:
+  level: "INFO"
+use_gpt_summary: true
+use_gpt_extensions: true
